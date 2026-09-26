@@ -7,23 +7,20 @@ import { logger } from "./middlewares/logger.js";
 import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 import { errors } from "celebrate";
 import cookieParser from "cookie-parser";
+import authRoutes from "./routes/authRoutes.js";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3030;
-
-// Middlewares:
-
-// Routes:
 
 app.use(logger);
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 
+app.use(authRoutes);
+
 app.use(notFoundHandler);
-
 app.use(errors());
-
 app.use(errorHandler);
 
 try {
