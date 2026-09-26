@@ -7,6 +7,7 @@ import { logger } from "./middlewares/logger.js";
 import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 import { errors } from "celebrate";
 import cookieParser from "cookie-parser";
+import categoriesRoutes from "./routes/categoriesRoutes.js";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3030;
@@ -14,6 +15,7 @@ const PORT = Number(process.env.PORT) || 3030;
 // Middlewares:
 
 // Routes:
+app.use("/api/categories", categoriesRoutes);
 
 app.use(logger);
 app.use(express.json());
