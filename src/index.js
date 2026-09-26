@@ -7,6 +7,7 @@ import { logger } from "./middlewares/logger.js";
 import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 import { errors } from "celebrate";
 import cookieParser from "cookie-parser";
+import locationsRouter from "./routes/locationsRouter.js";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3030;
@@ -19,6 +20,8 @@ app.use(logger);
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
+
+app.use("/", locationsRouter);
 
 app.use(notFoundHandler);
 
