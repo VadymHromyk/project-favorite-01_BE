@@ -7,7 +7,9 @@ import { logger } from "./middlewares/logger.js";
 import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 import { errors } from "celebrate";
 import cookieParser from "cookie-parser";
+
 import authRoutes from "./routes/authRoutes.js";
+import usersRoutes from "./routes/usersRoutes.js";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3030;
@@ -18,7 +20,9 @@ app.use(cors());
 app.use(cookieParser());
 
 app.use(authRoutes);
+app.use("/users", usersRoutes);
 
+// Обробники помилок мають бути після routes
 app.use(notFoundHandler);
 app.use(errors());
 app.use(errorHandler);
