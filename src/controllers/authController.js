@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import createHttpError from "http-errors";
+import { isValidObjectId } from "mongoose";
 import { User } from "../models/user.js";
 import { Session } from "../models/session.js";
 import {
@@ -48,6 +49,10 @@ export const refreshUserSession = async (req, res) => {
 
   if (!sessionId || !refreshToken) {
     throw createHttpError(401, "Missing refresh token");
+  }
+
+  if (!isValidObjectId(sessionId)) {
+    throw createHttpError(401, "Session not found");
   }
 
   const session = await Session.findOne({ _id: sessionId, refreshToken });
