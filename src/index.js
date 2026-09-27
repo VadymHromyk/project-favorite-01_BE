@@ -9,6 +9,7 @@ import { errors } from "celebrate";
 import cookieParser from "cookie-parser";
 import locationsRouter from "./routes/locationsRouter.js";
 import authRoutes from "./routes/authRoutes.js";
+import usersRouter from './routes/usersRouter.js';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3030;
@@ -21,6 +22,8 @@ app.use(cookieParser());
 app.use(locationsRouter);
 
 app.use(authRoutes);
+
+app.use("/api/users", usersRouter);
 
 app.use(notFoundHandler);
 app.use(errors());
