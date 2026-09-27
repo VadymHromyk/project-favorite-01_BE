@@ -1,4 +1,6 @@
+import createHttpError from "http-errors";
 import { Location } from "../models/location.js";
+import { saveFileToCloudinary } from "../utils/saveFileToCloudinary.js";
 
 export const getLocations = async (req, res) => {
   const {
@@ -79,4 +81,34 @@ export const getLocations = async (req, res) => {
     perPage,
   });
   console.log(req.query);
+};
+
+export const updateLocationId = async (req, res) => {
+  const { id } = req.params;
+  const { file } = req;
+
+  const updateData = {
+    ...req.body,
+  };
+
+  if (file) {
+    const result = await saveFileToCloudinary(file.buffer, id);
+
+    if (result?.secure_url) {
+      updateData.image = result.secure_url;
+    }
+  }
+
+  const updateLocation = await Location.findOneAndUpdate(
+    { _id: id },
+    updateData,
+    {
+      returnDocument: "after",
+      runValidators: true,
+    },
+  );
+  if (!updateLocation) {
+    throw createHttpError(404, `Location with id=${id} not found`);
+  }
+  res.json(updateLocation);
 };

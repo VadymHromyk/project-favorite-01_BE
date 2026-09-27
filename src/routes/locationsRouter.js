@@ -1,11 +1,30 @@
 import { Router } from "express";
 import { celebrate } from "celebrate";
-import { getLocations } from "../controllers/locationsController.js";
-import { getLocationsSchema } from "../validation/locationsValidation.js";
+import {
+  getLocations,
+  updateLocationId,
+} from "../controllers/locationsController.js";
+import {
+  getLocationsSchema,
+  updateLocationSchema,
+} from "../validations/locationsValidation.js";
+import { authenticate } from "../middlewares/authenticate.js";
+import { upload } from "../middlewares/multer.js";
 
 const locationsRouter = Router();
 
-locationsRouter.get("/locations", celebrate(getLocationsSchema), getLocations);
-locationsRouter.get("/locations", getLocations);
+locationsRouter.get(
+  "/api/locations",
+  celebrate(getLocationsSchema),
+  getLocations,
+);
+
+locationsRouter.patch(
+  "/api/locations/:id",
+  authenticate,
+  upload.single("image"),
+  celebrate(updateLocationSchema, { abortEarly: false }),
+  updateLocationId,
+);
 
 export default locationsRouter;
