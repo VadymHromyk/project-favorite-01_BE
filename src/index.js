@@ -7,6 +7,7 @@ import { logger } from "./middlewares/logger.js";
 import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 import { errors } from "celebrate";
 import cookieParser from "cookie-parser";
+import categoriesRoutes from "./routes/categoriesRoutes.js";
 import locationsRouter from "./routes/locationsRouter.js";
 import authRoutes from "./routes/authRoutes.js";
 
@@ -19,7 +20,7 @@ app.use(cors());
 app.use(cookieParser());
 
 app.use(locationsRouter);
-
+app.use("/api/categories", categoriesRoutes);
 app.use(authRoutes);
 
 app.use(notFoundHandler);
