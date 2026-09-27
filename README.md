@@ -51,5 +51,5 @@ Relax Map допомагає користувачам знаходити пер�
 
 ## 📡 Ендпоінти локацій
 
-- `POST /locations` — приватний, потребує авторизації. Приймає multipart/form-data (`name`, `type`, `region`, `description`, файл `image` — jpg/png до 1MB), завантажує зображення в Cloudinary і створює нову локацію.
+- `POST /locations` — приватний, потребує авторизації. Приймає multipart/form-data (`name`, `type`, `region`, `description`, файл `image` — jpg/png, менше 1MB), завантажує зображення в Cloudinary і створює нову локацію.
 - `GET /locations/:id` — публічний, повертає одну локацію за її ObjectId.

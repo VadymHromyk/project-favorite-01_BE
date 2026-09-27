@@ -2,7 +2,10 @@ import createHttpError from "http-errors";
 import { isValidObjectId } from "mongoose";
 import { Location } from "../models/location.js";
 import { User } from "../models/user.js";
-import { uploadImageToCloudinary } from "../utils/cloudinary.js";
+import {
+  uploadImageToCloudinary,
+  deleteImageFromCloudinary,
+} from "../utils/cloudinary.js";
 
 export const getLocations = async (req, res) => {
   const {
@@ -90,14 +93,24 @@ export const createLocation = async (req, res) => {
     throw createHttpError(400, "Image is required");
   }
 
-  const imageUrl = await uploadImageToCloudinary(req.file.buffer);
+  const { secure_url, public_id } = await uploadImageToCloudinary(
+    req.file.buffer,
+  );
 
-  const newLocation = await Location.create({
-    ...req.body,
-    image: imageUrl,
-    ownerId: req.user._id,
-    feedbacksId: [],
-  });
+  let newLocation;
+  try {
+    newLocation = await Location.create({
+      ...req.body,
+      image: secure_url,
+      ownerId: req.user._id,
+      feedbacksId: [],
+    });
+  } catch (error) {
+    await deleteImageFromCloudinary(public_id).catch((cleanupError) =>
+      console.error("Failed to delete orphaned image:", cleanupError),
+    );
+    throw error;
+  }
 
   res.status(201).json(newLocation);
 };

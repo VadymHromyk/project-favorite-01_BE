@@ -1,12 +1,13 @@
 import multer from "multer";
-import createHttpError from "http-errors";
+import createHttpError, { HttpError } from "http-errors";
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png"];
-const MAX_FILE_SIZE = 1 * 1024 * 1024;
+const MAX_FILE_SIZE = 1024 * 1024;
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: MAX_FILE_SIZE },
+  // must be strictly smaller than 1MB
+  limits: { fileSize: MAX_FILE_SIZE - 1 },
   fileFilter: (req, file, cb) => {
     if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
       return cb(createHttpError(400, "Image must be jpg or png"));
@@ -23,8 +24,15 @@ export const uploadLocationImage = (req, res, next) => {
       }
       return next(createHttpError(400, err.message));
     }
-    if (err) {
+    if (err instanceof HttpError) {
       return next(err);
+    }
+    // malformed multipart body from the parser, e.g. "Unexpected end of form"
+    if (err) {
+      return next(createHttpError(400, "Invalid multipart form data"));
+    }
+    if (req.file && req.file.size === 0) {
+      return next(createHttpError(400, "Image must not be empty"));
     }
     next();
   });
