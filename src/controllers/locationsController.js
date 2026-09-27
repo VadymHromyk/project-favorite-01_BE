@@ -125,7 +125,7 @@ export const getLocationById = async (req, res) => {
   // ownerId has no ref in the schema yet, so the model must be passed explicitly
   const location = await Location.findById(id).populate({
     path: "ownerId",
-    select: "username",
+    select: "name",
     model: User,
   });
 
