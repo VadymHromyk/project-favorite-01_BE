@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 
-app.use(locationsRouter);
+app.use("/api", locationsRouter);
 
 app.use(authRoutes);
 
