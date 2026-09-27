@@ -12,11 +12,10 @@ export const createFeedback = async (req, res, next) => {
       userName,
       rate,
       description,
-      status: 'pending'
     });
 
     res.status(201).json({
-      status: 'success',
+      success: true,
       data: newFeedback
     });
   } catch (error) {
