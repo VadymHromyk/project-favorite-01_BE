@@ -1,6 +1,6 @@
 import createHttpError from "http-errors";
 import { Location } from "../models/location.js";
-import { saveFileToCloudinary } from "../utils/saveFileToCloudinary.js";
+import { uploadImageToCloudinary } from "../utils/saveFileToCloudinary.js";
 
 export const getLocations = async (req, res) => {
   const {
@@ -85,6 +85,7 @@ export const getLocations = async (req, res) => {
 
 export const updateLocationId = async (req, res) => {
   const { id } = req.params;
+  const { _id: ownerId } = req.user;
   const { file } = req;
 
   const updateData = {
@@ -92,7 +93,7 @@ export const updateLocationId = async (req, res) => {
   };
 
   if (file) {
-    const result = await saveFileToCloudinary(file.buffer, id);
+    const result = await uploadImageToCloudinary(file.buffer, id);
 
     if (result?.secure_url) {
       updateData.image = result.secure_url;
@@ -100,7 +101,7 @@ export const updateLocationId = async (req, res) => {
   }
 
   const updateLocation = await Location.findOneAndUpdate(
-    { _id: id },
+    { _id: id, ownerId },
     updateData,
     {
       returnDocument: "after",

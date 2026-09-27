@@ -24,10 +24,10 @@ export const updateLocationSchema = {
     id: idSchema.required(),
   }),
   [Segments.BODY]: Joi.object({
-    name: Joi.string().messages({
+    name: Joi.string().trim().min(3).max(96).messages({
       "any.required": "name must be exist",
     }),
-    description: Joi.string().messages({
+    description: Joi.string().trim().min(20).max(6000).messages({
       "any.required": "description must be exist",
     }),
     type: Joi.string(),

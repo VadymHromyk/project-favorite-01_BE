@@ -1,36 +1,28 @@
 import { v2 as cloudinary } from "cloudinary";
+import createHttpError from "http-errors";
 
 cloudinary.config({
-  secure: true,
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export async function saveFileToCloudinary(buffer, Id) {
-  const options = {
-    folder: "locations/images",
-    public_id: `location_${Id}`,
-    resource_type: "image",
-    overwrite: true,
-    unique_filename: false,
-    transformation: [
-      { width: 500, height: 500, crop: "fill", gravity: "auto" },
-      { fetch_format: "auto", quality: "auto" },
-    ],
-  };
-
-  return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
-      options,
-      (error, result) => {
-        if (error) {
-          return reject(error);
+export const uploadImageToCloudinary = (buffer) =>
+  new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "locations" },
+      (err, result) => {
+        if (err) {
+          if (err.http_code === 400) {
+            return reject(createHttpError(400, "Invalid image file"));
+          }
+          return reject(err);
         }
-        resolve(result);
+        resolve({ secure_url: result.secure_url, public_id: result.public_id });
       },
     );
-
-    uploadStream.end(buffer);
+    stream.end(buffer);
   });
-}
+
+export const deleteImageFromCloudinary = (publicId) =>
+  cloudinary.uploader.destroy(publicId);
