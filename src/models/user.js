@@ -1,32 +1,41 @@
-import { Schema } from "mongoose";
-import { model } from "mongoose";
-
-// ЦЕ НАПИСАНА "ЗАГЛУШКА", ЩОБ НЕ ЛАМАВСЯ КОД ДЛЯ authenticate.js
-// ЦЕЙ ФАЙЛ ТИМЧАСОВИЙ
+import { Schema, model } from "mongoose";
 
 const userSchema = new Schema(
   {
-    username: {
+    name: {
       type: String,
+      required: true,
+      trim: true,
+      default: function () {
+        return this.email;
+      },
     },
-    email: {
-      type: String,
+    email: { 
+      type: String, 
+      unique: true, 
+      required: true, 
+      trim: true, 
+      lowercase: true 
     },
-    password: {
+    password: { 
+      type: String, 
+      required: true, 
+      minlength: 8 
+    },
+    avatarUrl: {
       type: String,
+      default: "https://academstore.s3.eu-north-1.amazonaws.com/default-avatar.png",
+    },
+    articlesAmount: {
+      type: Number,
+      default: 0,
     },
   },
   {
     timestamps: true,
     versionKey: false,
-  },
-);
-
-userSchema.pre("save", function () {
-  if (!this.username) {
-    this.username = this.email;
   }
-});
+);
 
 userSchema.methods.toJSON = function () {
   const obj = this.toObject();
