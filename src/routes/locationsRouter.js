@@ -1,11 +1,27 @@
 import { Router } from "express";
 import { celebrate } from "celebrate";
-import { getLocations } from "../controllers/locationsController.js";
-import { getLocationsSchema } from "../validation/locationsValidation.js";
+import {
+  getLocations,
+  createLocation,
+} from "../controllers/locationsController.js";
+import {
+  getLocationsSchema,
+  createLocationSchema,
+} from "../validation/locationsValidation.js";
+import { authenticate } from "../middlewares/authenticate.js";
+import { uploadLocationImage } from "../middlewares/uploadLocationImage.js";
 
 const locationsRouter = Router();
 
 locationsRouter.get("/locations", celebrate(getLocationsSchema), getLocations);
 locationsRouter.get("/locations", getLocations);
+
+locationsRouter.post(
+  "/locations",
+  authenticate,
+  uploadLocationImage,
+  celebrate(createLocationSchema),
+  createLocation,
+);
 
 export default locationsRouter;

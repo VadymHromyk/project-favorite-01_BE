@@ -1,4 +1,6 @@
+import createHttpError from "http-errors";
 import { Location } from "../models/location.js";
+import { uploadImageToCloudinary } from "../utils/cloudinary.js";
 
 export const getLocations = async (req, res) => {
   const {
@@ -79,4 +81,21 @@ export const getLocations = async (req, res) => {
     perPage,
   });
   console.log(req.query);
+};
+
+export const createLocation = async (req, res) => {
+  if (!req.file) {
+    throw createHttpError(400, "Image is required");
+  }
+
+  const imageUrl = await uploadImageToCloudinary(req.file.buffer);
+
+  const newLocation = await Location.create({
+    ...req.body,
+    image: imageUrl,
+    ownerId: req.user._id,
+    feedbacksId: [],
+  });
+
+  res.status(201).json(newLocation);
 };
