@@ -12,7 +12,7 @@ import authRoutes from "./routes/authRoutes.js";
 import usersRoutes from "./routes/usersRoutes.js";
 
 const app = express();
-const PORT = Number(process.env.PORT) || 3030;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(logger);
 app.use(express.json());
@@ -22,7 +22,6 @@ app.use(cookieParser());
 app.use(authRoutes);
 app.use("/users", usersRoutes);
 
-// Обробники помилок мають бути після routes
 app.use(notFoundHandler);
 app.use(errors());
 app.use(errorHandler);
