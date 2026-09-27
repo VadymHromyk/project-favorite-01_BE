@@ -7,11 +7,19 @@ import { logger } from "./middlewares/logger.js";
 import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 import { errors } from "celebrate";
 import cookieParser from "cookie-parser";
+import categoriesRoutes from "./routes/categoriesRoutes.js";
 import locationsRouter from "./routes/locationsRouter.js";
 import authRoutes from "./routes/authRoutes.js";
+import feedbackRoutes from "./routes/feedbackRoutes.js";
+import usersRouter from "./routes/usersRouter.js";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3030;
+
+// Middlewares:
+
+// Routes:
+app.use("/api/feedbacks", feedbackRoutes);
 
 app.use(logger);
 app.use(express.json());
@@ -19,8 +27,10 @@ app.use(cors());
 app.use(cookieParser());
 
 app.use("/api", locationsRouter);
-
+app.use("/api/categories", categoriesRoutes);
 app.use(authRoutes);
+
+app.use("/api/users", usersRouter);
 
 app.use(notFoundHandler);
 app.use(errors());
