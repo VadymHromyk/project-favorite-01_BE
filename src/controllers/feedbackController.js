@@ -1,7 +1,6 @@
 import { Feedback } from '../models/feedbackModel.js';
 
 const FEEDBACK_CONFIG = {
-  DEFAULT_STATUS: 'approved',
   SORT_ORDER: { createdAt: -1 },
   PARSE_INT_RADIX: 10,
 };
@@ -9,9 +8,9 @@ const FEEDBACK_CONFIG = {
 // ПУБЛІЧНИЙ МЕТОД GET (ОТРИМАННЯ ВІДГУКІВ)
 export const getFeedbacks = async (req, res, next) => {
   try {
-    const { locationId, page = 1, limit = 10, status = 'approved' } = req.query;
+    const { locationId, page = 1, limit = 10 } = req.query;
 
-    const filter = { status };
+    const filter = {};
 
     // Фільтруємо за конкретною локацією, якщо фронтенд передав її ID
     if (locationId) {
@@ -32,7 +31,7 @@ export const getFeedbacks = async (req, res, next) => {
           path: 'locationId',
           select: 'name region locationType',
         })
-        .populate('owner', 'name'),
+        .populate('owner', 'name avatar'),
       Feedback.countDocuments(filter),
     ]);
 

@@ -4,18 +4,13 @@ const feedbackSchema = new Schema(
   {
     locationId: {
       type: Schema.Types.ObjectId,
-      ref: 'Location'
+      ref: 'Location',
+      required: true,
     },
     owner: {
       type: Schema.Types.ObjectId,
-      ref: 'User'
-    },
-    userName: {
-      type: String,
+      ref: 'User',
       required: true,
-      trim: true,
-      minlength: 2,
-      maxlength: 32
     },
     rate: {
       type: Number,
@@ -29,11 +24,6 @@ const feedbackSchema = new Schema(
       trim: true,
       minlength: 1,
       maxlength: 200
-    },
-    status: {
-      type: String,
-      enum: ['pending', 'approved'],
-      default: 'pending',
     },
   },
   { timestamps: true, versionKey: false },
