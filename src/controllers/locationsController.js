@@ -9,7 +9,7 @@ export const getLocations = async (req, res) => {
     sortBy = "_id",
     sortOrder = "asc",
     region,
-    type,
+    locationType,
     rate,
     search,
   } = req.query;
@@ -21,8 +21,8 @@ export const getLocations = async (req, res) => {
   if (region) {
     locationQuery.where("region").equals(region);
   }
-  if (type) {
-    locationQuery.where("type").equals(type);
+  if (locationType) {
+    locationQuery.where("locationType").equals(locationType);
   }
 
   if (rate) {
@@ -44,18 +44,6 @@ export const getLocations = async (req, res) => {
             $options: "i",
           },
         },
-        // {
-        //   region: {
-        //     $regex: region,
-        //     $options: "i",
-        //   },
-        // },
-        // {
-        //   type: {
-        //     $regex: type,
-        //     $options: "i",
-        //   },
-        // },
       ],
     });
   }
@@ -66,7 +54,7 @@ export const getLocations = async (req, res) => {
       .skip(skip)
       .limit(perPage)
       .sort({
-        [sortBy]: sortOrder === "desc" ? -1 : 1,
+        [sortBy]: sortOrder === "asc" ? -1 : 1,
       })
       .populate("ownerId", "name"),
     locationQuery.countDocuments(),
@@ -111,5 +99,6 @@ export const updateLocationId = async (req, res) => {
   if (!updateLocation) {
     throw createHttpError(404, `Location with id=${id} not found`);
   }
+
   res.json(updateLocation);
 };

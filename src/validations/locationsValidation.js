@@ -1,5 +1,9 @@
 import { Segments, Joi } from "celebrate";
-import { locationsSortFields } from "../constants/locationsConstants.js";
+import {
+  locationsSortFields,
+  locationTypeList,
+  regionTypeList,
+} from "../constants/locationsConstants.js";
 import { idSchema } from "./index.js";
 
 export const getLocationsSchema = {
@@ -10,10 +14,8 @@ export const getLocationsSchema = {
       .valid(...locationsSortFields)
       .default("_id"),
     sortOrder: Joi.string().valid("asc", "desc").default("asc"),
-    type: Joi.string(),
-    // type: Joi.string().valid(...typeTypeList),
-    region: Joi.string(),
-    // region: Joi.string().valid(...regionTypeList),
+    locationType: Joi.string().valid(...locationTypeList),
+    region: Joi.string().valid(...regionTypeList),
     rate: Joi.number().min(0).max(5),
     search: Joi.string().trim(),
   }),
@@ -30,9 +32,7 @@ export const updateLocationSchema = {
     description: Joi.string().trim().min(20).max(6000).messages({
       "any.required": "description must be exist",
     }),
-    type: Joi.string(),
-    // type: Joi.string().valid(...typeTypeList),
-    region: Joi.string(),
-    // region: Joi.string().valid(...regionTypeList),
+    locationType: Joi.string().valid(...locationTypeList),
+    region: Joi.string().valid(...regionTypeList),
   }).min(1),
 };

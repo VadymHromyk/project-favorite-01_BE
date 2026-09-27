@@ -11,13 +11,13 @@ const locationSchema = new Schema(
       type: String,
       required: true,
     },
-    type: {
+    locationType: {
       type: String,
-      // ref: "Type",
+      ref: "LocationType",
     },
     region: {
       type: String,
-      // ref: "Region",
+      ref: "Region",
       required: true,
     },
     rate: {
@@ -39,12 +39,12 @@ const locationSchema = new Schema(
     },
     ownerId: {
       type: Schema.Types.ObjectId,
-      // ref: "User",
+      ref: "User",
       required: true,
     },
     feedbacksId: {
       type: Schema.Types.ObjectId,
-      // ref: "Feedback",
+      ref: "Feedback",
       required: false,
     },
   },
