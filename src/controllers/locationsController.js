@@ -1,5 +1,7 @@
 import createHttpError from "http-errors";
+import { isValidObjectId } from "mongoose";
 import { Location } from "../models/location.js";
+import { User } from "../models/user.js";
 import { uploadImageToCloudinary } from "../utils/cloudinary.js";
 
 export const getLocations = async (req, res) => {
@@ -98,4 +100,25 @@ export const createLocation = async (req, res) => {
   });
 
   res.status(201).json(newLocation);
+};
+
+export const getLocationById = async (req, res) => {
+  const { id } = req.params;
+
+  if (!isValidObjectId(id)) {
+    throw createHttpError(400, "Invalid location id");
+  }
+
+  // ownerId has no ref in the schema yet, so the model must be passed explicitly
+  const location = await Location.findById(id).populate({
+    path: "ownerId",
+    select: "username",
+    model: User,
+  });
+
+  if (!location) {
+    throw createHttpError(404, "Location not found");
+  }
+
+  res.status(200).json(location);
 };

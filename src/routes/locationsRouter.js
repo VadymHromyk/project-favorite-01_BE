@@ -3,6 +3,7 @@ import { celebrate } from "celebrate";
 import {
   getLocations,
   createLocation,
+  getLocationById,
 } from "../controllers/locationsController.js";
 import {
   getLocationsSchema,
@@ -23,5 +24,7 @@ locationsRouter.post(
   celebrate(createLocationSchema),
   createLocation,
 );
+
+locationsRouter.get("/locations/:id", getLocationById);
 
 export default locationsRouter;
