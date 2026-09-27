@@ -25,7 +25,6 @@ app.use("/users", usersRoutes);
 app.use(notFoundHandler);
 app.use(errors());
 app.use(errorHandler);
-
 try {
   await connectMongoDB();
 
