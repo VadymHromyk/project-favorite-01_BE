@@ -10,9 +10,15 @@ import cookieParser from "cookie-parser";
 import categoriesRoutes from "./routes/categoriesRoutes.js";
 import locationsRouter from "./routes/locationsRouter.js";
 import authRoutes from "./routes/authRoutes.js";
+import feedbackRoutes from "./routes/feedbackRoutes.js";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3030;
+
+// Middlewares:
+
+// Routes:
+app.use("/api/feedbacks", feedbackRoutes);
 
 app.use(logger);
 app.use(express.json());
