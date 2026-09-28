@@ -22,6 +22,24 @@ export const uploadLocationImage = (req, res, next) => {
       if (err.code === "LIMIT_FILE_SIZE") {
         return next(createHttpError(400, "Image must be smaller than 1MB"));
       }
+      if (err.code === "LIMIT_UNEXPECTED_FILE") {
+        // same code for a second file under "image" and for a file under another key
+        if (err.field === "image") {
+          return next(createHttpError(400, "Only one image can be uploaded"));
+        }
+        return next(
+          createHttpError(400, 'Image must be sent in the "image" field'),
+        );
+      }
+      // multer uses the same code for a file and for a text field without a key
+      if (err.code === "MISSING_FIELD_NAME") {
+        return next(
+          createHttpError(
+            400,
+            'Every form field must have a name, the image goes in the "image" field',
+          ),
+        );
+      }
       return next(createHttpError(400, err.message));
     }
     if (err instanceof HttpError) {
