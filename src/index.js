@@ -14,13 +14,22 @@ import usersRoutes from "./routes/usersRoutes.js";
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
+// Middlewares:
+
+// Routes:
+app.use("/api/feedbacks", feedbackRoutes);
+
 app.use(logger);
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 
+app.use(locationsRouter);
+app.use("/api/categories", categoriesRoutes);
 app.use(authRoutes);
 app.use("/users", usersRoutes);
+
+app.use("/api/users", usersRouter);
 
 app.use(notFoundHandler);
 app.use(errors());
