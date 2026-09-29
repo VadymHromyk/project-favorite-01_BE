@@ -1,4 +1,4 @@
-import { model, Schema, mongoose } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 
 const feedbackSchema = new Schema(
   {
