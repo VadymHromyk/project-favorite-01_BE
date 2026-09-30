@@ -1,4 +1,4 @@
-import { Feedback } from '../models/feedbackModel.js';
+import { Feedback } from "../models/feedbackModel.js";
 
 const FEEDBACK_CONFIG = {
   SORT_ORDER: { createdAt: -1 },
@@ -29,10 +29,10 @@ export const getFeedbacks = async (req, res, next) => {
         .skip(skip)
         .limit(currentLimit)
         .populate({
-          path: 'locationId',
-          select: 'name region locationType',
+          path: "locationId",
+          select: "name region locationType",
         })
-        .populate('owner', 'name avatar'),
+        .populate("owner", "name avatar"),
       Feedback.countDocuments(filter),
     ]);
 
@@ -48,5 +48,28 @@ export const getFeedbacks = async (req, res, next) => {
     });
   } catch (error) {
     next(error); // Передаємо помилку далі у глобальний обробник команди
+  }
+};
+
+export const createFeedback = async (req, res, next) => {
+  try {
+    const { locationId, userName, rate, description } = req.body;
+
+    const owner = req.user?._id;
+
+    const newFeedback = await Feedback.create({
+      locationId,
+      owner,
+      userName,
+      rate,
+      description,
+    });
+
+    res.status(201).json({
+      success: true,
+      data: newFeedback,
+    });
+  } catch (error) {
+    next(error);
   }
 };
