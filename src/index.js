@@ -7,14 +7,13 @@ import { logger } from "./middlewares/logger.js";
 import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 import { errors } from "celebrate";
 import cookieParser from "cookie-parser";
-import categoriesRoutes from "./routes/categoriesRoutes.js";
-import locationsRouter from "./routes/locationsRouter.js";
 import authRoutes from "./routes/authRoutes.js";
-import feedbackRoutes from "./routes/feedbackRoutes.js";
-import usersRouter from "./routes/usersRouter.js";
+
+import locationsRouter from "./routes/locationRouter.js";
+import usersRoutes from "./routes/usersRoutes.js";
 
 const app = express();
-const PORT = Number(process.env.PORT) || 3030;
+const PORT = Number(process.env.PORT) || 3000;
 
 // Middlewares:
 
@@ -26,16 +25,17 @@ app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 
-app.use(locationsRouter);
+app.use("/api", locationsRouter);
 app.use("/api/categories", categoriesRoutes);
 app.use(authRoutes);
+app.use("/users", usersRoutes);
+app.use(feedbackRoutes); //+роутер відгуків
 
 app.use("/api/users", usersRouter);
 
 app.use(notFoundHandler);
 app.use(errors());
 app.use(errorHandler);
-
 try {
   await connectMongoDB();
 

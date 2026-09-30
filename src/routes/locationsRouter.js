@@ -1,15 +1,21 @@
 import { Router } from "express";
 import { celebrate } from "celebrate";
+
+import { upload } from "../middlewares/multer.js";
+
 import {
+  createLocation,
   getLocations,
+  getLocationById,
   updateLocationId,
 } from "../controllers/locationsController.js";
 import {
   getLocationsSchema,
-  updateLocationSchema,
-} from "../validations/locationsValidation.js";
+  createLocationSchema,
+} from "../validation/locationsValidation.js";
 import { authenticate } from "../middlewares/authenticate.js";
-import { upload } from "../middlewares/multer.js";
+import { uploadLocationImage } from "../middlewares/uploadLocationImage.js";
+import { updateLocationSchema } from "../validations/locationsValidation.js";
 
 const locationsRouter = Router();
 
@@ -26,5 +32,15 @@ locationsRouter.patch(
   celebrate(updateLocationSchema, { abortEarly: false }),
   updateLocationId,
 );
+
+locationsRouter.post(
+  "/locations",
+  authenticate,
+  uploadLocationImage,
+  celebrate(createLocationSchema),
+  createLocation,
+);
+
+locationsRouter.get("/locations/:id", getLocationById);
 
 export default locationsRouter;

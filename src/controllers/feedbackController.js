@@ -1,7 +1,6 @@
-import { Feedback } from '../models/feedbackModel.js';
+import { Feedback } from "../models/feedbackModel.js";
 
 const FEEDBACK_CONFIG = {
-  DEFAULT_STATUS: 'approved',
   SORT_ORDER: { createdAt: -1 },
   PARSE_INT_RADIX: 10,
 };
@@ -9,17 +8,18 @@ const FEEDBACK_CONFIG = {
 // ПУБЛІЧНИЙ МЕТОД GET (ОТРИМАННЯ ВІДГУКІВ)
 export const getFeedbacks = async (req, res, next) => {
   try {
-    const { locationId, page = 1, limit = 10, status = 'approved' } = req.query;
+    // Об'єднуємо query та body, щоб підстрахуватися від будь-якого стилю запитів
+    const requestData = { ...req.query, ...req.body };
+    const { locationId, page, limit } = requestData;
 
-    const filter = { status };
-
+    const filter = {};
     // Фільтруємо за конкретною локацією, якщо фронтенд передав її ID
     if (locationId) {
       filter.locationId = locationId;
     }
 
-    const currentPage = parseInt(page, FEEDBACK_CONFIG.PARSE_INT_RADIX);
-    const currentLimit = parseInt(limit, FEEDBACK_CONFIG.PARSE_INT_RADIX);
+    const currentPage = parseInt(page, FEEDBACK_CONFIG.PARSE_INT_RADIX) || 1;
+    const currentLimit = parseInt(limit, FEEDBACK_CONFIG.PARSE_INT_RADIX) || 10;
     const skip = (currentPage - 1) * currentLimit;
 
     // Паралельне виконання запитів до бази даних для максимальної швидкодії
@@ -29,10 +29,10 @@ export const getFeedbacks = async (req, res, next) => {
         .skip(skip)
         .limit(currentLimit)
         .populate({
-          path: 'locationId',
-          select: 'name region locationType',
+          path: "locationId",
+          select: "name region locationType",
         })
-        .populate('owner', 'name'),
+        .populate("owner", "name avatar"),
       Feedback.countDocuments(filter),
     ]);
 
@@ -48,5 +48,28 @@ export const getFeedbacks = async (req, res, next) => {
     });
   } catch (error) {
     next(error); // Передаємо помилку далі у глобальний обробник команди
+  }
+};
+
+export const createFeedback = async (req, res, next) => {
+  try {
+    const { locationId, userName, rate, description } = req.body;
+
+    const owner = req.user?._id;
+
+    const newFeedback = await Feedback.create({
+      locationId,
+      owner,
+      userName,
+      rate,
+      description,
+    });
+
+    res.status(201).json({
+      success: true,
+      data: newFeedback,
+    });
+  } catch (error) {
+    next(error);
   }
 };
