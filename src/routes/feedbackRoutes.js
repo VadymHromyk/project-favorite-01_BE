@@ -7,6 +7,6 @@ import { feedbackQuerySchema } from '../validations/feedbackValidation.js';
 const router = Router();
 
 // ПУБЛІЧНИЙ ендпоінт для отримання відгуків з валідацією вхідних параметрів
-router.get('/feedbacks', celebrate(feedbackQuerySchema), getFeedbacks);
+router.get('/', celebrate(feedbackQuerySchema), getFeedbacks);
 
 export default router;
