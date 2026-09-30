@@ -2,25 +2,30 @@ import { Schema, model } from "mongoose";
 
 const locationSchema = new Schema(
   {
+    image: {
+      type: String,
+      required: false,
+      default: "https://picsum.photos/id/866/600/500",
+    },
     name: {
       type: String,
       required: true,
       trim: true,
     },
-
     locationType: {
       type: String,
       required: true,
       trim: true,
     },
-
     region: {
       type: String,
-      // ref: "Region",
       required: true,
       trim: true,
     },
-
+    rate: {
+      type: Number,
+      required: true,
+    },
     description: {
       type: String,
       required: true,
@@ -41,7 +46,7 @@ const locationSchema = new Schema(
     },
     feedbacksId: {
       type: [{ type: Schema.Types.ObjectId }],
-      // ref: "Feedback",
+      ref: "Feedback",
       default: [],
     },
   },

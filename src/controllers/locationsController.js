@@ -5,7 +5,7 @@ import { User } from "../models/user.js";
 import {
   uploadImageToCloudinary,
   deleteImageFromCloudinary,
-} from "../utils/cloudinary.js";
+} from "../utils/saveFileToCloudinary.js";
 
 export const getLocations = async (req, res) => {
   const {
