@@ -29,6 +29,7 @@ app.use(cookieParser());
 app.use(locationsRouter);
 app.use("/api/categories", categoriesRoutes);
 app.use(authRoutes);
+app.use(feedbackRoutes); //+роутер відгуків
 
 app.use("/api/users", usersRouter);
 
