@@ -25,16 +25,23 @@ const locationSchema = new Schema(
       required: true,
       trim: true,
     },
-
-    image: {
-      type: String,
+    coordinates: {
+      lat: {
+        type: Number,
+      },
+      lon: {
+        type: Number,
+      },
+    },
+    ownerId: {
+      type: Schema.Types.ObjectId,
+      // ref: "User",
       required: true,
     },
-
-    owner: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+    feedbacksId: {
+      type: [{ type: Schema.Types.ObjectId }],
+      // ref: "Feedback",
+      default: [],
     },
   },
   {

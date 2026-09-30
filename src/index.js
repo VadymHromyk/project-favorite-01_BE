@@ -24,10 +24,11 @@ app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 
-app.use(locationsRouter);
+app.use("/api", locationsRouter);
 app.use("/api/categories", categoriesRoutes);
 app.use(authRoutes);
 app.use("/users", usersRoutes);
+app.use(feedbackRoutes); //+роутер відгуків
 
 app.use("/api/users", usersRouter);
 
