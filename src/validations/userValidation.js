@@ -6,3 +6,10 @@ export const getUserByIdSchema = {
     userId: idSchema.required(),
   }),
 };
+
+export const userUpdateSchema = {
+  [Segments.BODY]: Joi.object({
+    name: Joi.string().min(2).max(32).optional(),
+    email: Joi.string().email().optional(),
+  }),
+};

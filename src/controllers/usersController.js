@@ -2,6 +2,7 @@ import { User } from "../models/user.js";
 import { Location } from "../models/location.js";
 import { isValidObjectId } from "mongoose";
 import createHttpError from "http-errors";
+import { updateUserProfileService } from "../services/users.js";
 
 export const getUserLocations = async (req, res) => {
   const { userId } = req.params;
@@ -72,6 +73,28 @@ export const getUserById = async (req, res, next) => {
       status: 200,
       message: "Public user profile retrieved successfully",
       data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const editProfileController = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const updateData = req.body;
+    const avatarFile = req.file;
+
+    const updatedUser = await updateUserProfileService(
+      userId,
+      updateData,
+      avatarFile,
+    );
+
+    res.status(200).json({
+      status: 200,
+      message: "Profile updated successfully",
+      data: updatedUser,
     });
   } catch (error) {
     next(error);

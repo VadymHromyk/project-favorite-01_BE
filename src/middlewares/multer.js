@@ -1,22 +1,22 @@
-// import multer from "multer";
+import multer from "multer";
 
-// export const upload = multer({
-//   storage: multer.memoryStorage(),
-//   limits: {
-//     fileSize: 2 * 1024 * 1024,
-//   },
-//   fileFilter: (req, file, cb) => {
-//     const allowedTypes = file.mimetype.startsWith("image/");
+export const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 2 * 1024 * 1024,
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = file.mimetype.startsWith("image/");
 
-//     if (allowedTypes) {
-//       cb(null, true);
-//     } else {
-//       cb(
-//         new Error(
-//           "Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.",
-//         ),
-//         false,
-//       );
-//     }
-//   },
-// });
+    if (allowedTypes) {
+      cb(null, true);
+    } else {
+      cb(
+        new Error(
+          "Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.",
+        ),
+        false,
+      );
+    }
+  },
+});
