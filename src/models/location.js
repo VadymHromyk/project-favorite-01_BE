@@ -2,30 +2,28 @@ import { Schema, model } from "mongoose";
 
 const locationSchema = new Schema(
   {
-    image: {
-      type: String,
-      // default: "https://ac.goit.global/fullstack/react/default-avatar.jpg",
-      required: true,
-    },
     name: {
       type: String,
       required: true,
+      trim: true,
     },
+
     type: {
       type: String,
-      // ref: "Type",
+      required: true,
+      trim: true,
     },
+
     region: {
       type: String,
-      // ref: "Region",
       required: true,
+      trim: true,
     },
-    rate: {
-      type: Number,
-    },
+
     description: {
       type: String,
       required: true,
+      trim: true,
     },
     coordinates: {
       lat: {
@@ -45,14 +43,11 @@ const locationSchema = new Schema(
       // ref: "Feedback",
       default: [],
     },
-    // attach: {
-    //   // required: false,
-    //   type: String,
-    // },
   },
-  { versionKey: false, timestamps: false },
+  {
+    timestamps: true,
+    versionKey: false,
+  },
 );
-
-locationSchema.index({ type: 1 });
 
 export const Location = model("Location", locationSchema);
