@@ -4,7 +4,7 @@ import {
   locationTypeList,
   regionTypeList,
 } from "../constants/locationsConstants.js";
-import { idSchema } from "./index.js";
+import { idSchema } from "./idValidaion.js";
 
 export const getLocationsSchema = {
   [Segments.QUERY]: Joi.object({
@@ -43,5 +43,12 @@ export const createLocationSchema = {
     locationType: Joi.string().trim().max(64).required(),
     region: Joi.string().trim().max(64).required(),
     description: Joi.string().trim().min(20).max(6000).required(),
+    rate: Joi.number().min(0).max(5),
+  }),
+};
+
+export const updateLocationByIdSchema = {
+  [Segments.PARAMS]: Joi.object({
+    id: idSchema.required(),
   }),
 };

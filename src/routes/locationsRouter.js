@@ -13,6 +13,7 @@ import {
   getLocationsSchema,
   createLocationSchema,
   updateLocationSchema,
+  updateLocationByIdSchema,
 } from "../validations/locationsValidation.js";
 
 const locationsRouter = Router();
@@ -31,10 +32,14 @@ locationsRouter.post(
   "/",
   authenticate,
   uploadLocationImage,
-  celebrate(createLocationSchema),
+  celebrate(createLocationSchema, { abortEarly: false }),
   createLocation,
 );
 
-locationsRouter.get("/:id", getLocationById);
+locationsRouter.get(
+  "/:id",
+  celebrate(updateLocationByIdSchema),
+  getLocationById,
+);
 
 export default locationsRouter;

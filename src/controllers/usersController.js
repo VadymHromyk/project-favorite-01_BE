@@ -1,6 +1,7 @@
 import { User } from "../models/user.js";
 import { Location } from "../models/location.js";
 import { isValidObjectId } from "mongoose";
+import createHttpError from "http-errors";
 
 export const getUserLocations = async (req, res) => {
   const { userId } = req.params;
