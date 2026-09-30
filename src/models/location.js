@@ -30,11 +30,9 @@ const locationSchema = new Schema(
     coordinates: {
       lat: {
         type: Number,
-        required: true,
       },
       lon: {
         type: Number,
-        required: true,
       },
     },
     ownerId: {
@@ -43,9 +41,9 @@ const locationSchema = new Schema(
       required: true,
     },
     feedbacksId: {
-      type: Schema.Types.ObjectId,
+      type: [{ type: Schema.Types.ObjectId }],
       // ref: "Feedback",
-      required: true,
+      default: [],
     },
     // attach: {
     //   // required: false,
