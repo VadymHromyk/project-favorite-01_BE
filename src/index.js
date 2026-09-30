@@ -8,33 +8,30 @@ import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 import { errors } from "celebrate";
 import cookieParser from "cookie-parser";
 
+import feedbackRoutes from "./routes/feedbackRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import usersRoutes from "./routes/usersRoutes.js";
+import locationsRouter from "./routes/locationsRouter.js";
+import categoriesRoutes from "./routes/categoriesRoutes.js";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
-
-// Middlewares:
-
-// Routes:
-app.use("/api/feedbacks", feedbackRoutes);
 
 app.use(logger);
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 
-app.use("/api", locationsRouter);
+app.use("/api/auth", authRoutes);
+app.use("/api/feedbacks", feedbackRoutes);
+app.use("/api/users", usersRoutes);
+app.use("/api/locations", locationsRouter);
 app.use("/api/categories", categoriesRoutes);
-app.use(authRoutes);
-app.use("/users", usersRoutes);
-app.use(feedbackRoutes); //+роутер відгуків
-
-app.use("/api/users", usersRouter);
 
 app.use(notFoundHandler);
 app.use(errors());
 app.use(errorHandler);
+
 try {
   await connectMongoDB();
 

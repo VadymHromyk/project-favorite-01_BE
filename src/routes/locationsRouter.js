@@ -14,17 +14,16 @@ import { uploadLocationImage } from "../middlewares/uploadLocationImage.js";
 
 const locationsRouter = Router();
 
-locationsRouter.get("/locations", celebrate(getLocationsSchema), getLocations);
-locationsRouter.get("/locations", getLocations);
+locationsRouter.get("/", celebrate(getLocationsSchema), getLocations);
 
 locationsRouter.post(
-  "/locations",
+  "/",
   authenticate,
   uploadLocationImage,
   celebrate(createLocationSchema),
   createLocation,
 );
 
-locationsRouter.get("/locations/:id", getLocationById);
+locationsRouter.get("/:id", getLocationById);
 
 export default locationsRouter;
