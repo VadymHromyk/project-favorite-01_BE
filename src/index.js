@@ -10,6 +10,7 @@ import cookieParser from "cookie-parser";
 
 import feedbackRoutes from "./routes/feedbackRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+
 import usersRoutes from "./routes/usersRoutes.js";
 import locationsRouter from "./routes/locationsRouter.js";
 import categoriesRoutes from "./routes/categoriesRoutes.js";

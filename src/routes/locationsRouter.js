@@ -1,20 +1,31 @@
 import { Router } from "express";
 import { celebrate } from "celebrate";
+
 import {
-  getLocations,
   createLocation,
+  getLocations,
   getLocationById,
+  updateLocationId,
 } from "../controllers/locationsController.js";
+import { authenticate } from "../middlewares/authenticate.js";
+import { uploadLocationImage } from "../middlewares/uploadLocationImage.js";
 import {
   getLocationsSchema,
   createLocationSchema,
-} from "../validation/locationsValidation.js";
-import { authenticate } from "../middlewares/authenticate.js";
-import { uploadLocationImage } from "../middlewares/uploadLocationImage.js";
+  updateLocationSchema,
+} from "../validations/locationsValidation.js";
 
 const locationsRouter = Router();
 
 locationsRouter.get("/", celebrate(getLocationsSchema), getLocations);
+
+locationsRouter.patch(
+  "/:id",
+  authenticate,
+  uploadLocationImage,
+  celebrate(updateLocationSchema, { abortEarly: false }),
+  updateLocationId,
+);
 
 locationsRouter.post(
   "/",

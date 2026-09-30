@@ -8,7 +8,7 @@ const locationSchema = new Schema(
       trim: true,
     },
 
-    type: {
+    locationType: {
       type: String,
       required: true,
       trim: true,
@@ -16,6 +16,7 @@ const locationSchema = new Schema(
 
     region: {
       type: String,
+      // ref: "Region",
       required: true,
       trim: true,
     },
@@ -35,7 +36,7 @@ const locationSchema = new Schema(
     },
     ownerId: {
       type: Schema.Types.ObjectId,
-      // ref: "User",
+      ref: "User",
       required: true,
     },
     feedbacksId: {

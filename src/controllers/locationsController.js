@@ -1,6 +1,6 @@
 import createHttpError from "http-errors";
-import { isValidObjectId } from "mongoose";
 import { Location } from "../models/location.js";
+import { isValidObjectId } from "mongoose";
 import { User } from "../models/user.js";
 import {
   uploadImageToCloudinary,
@@ -14,20 +14,18 @@ export const getLocations = async (req, res) => {
     sortBy = "_id",
     sortOrder = "asc",
     region,
-    type,
+    locationType,
     rate,
     search,
   } = req.query;
   const skip = (page - 1) * perPage;
   const locationQuery = Location.find();
 
-  //! QUERY BUILDER
-
   if (region) {
     locationQuery.where("region").equals(region);
   }
-  if (type) {
-    locationQuery.where("type").equals(type);
+  if (locationType) {
+    locationQuery.where("locationType").equals(locationType);
   }
 
   if (rate) {
@@ -49,18 +47,6 @@ export const getLocations = async (req, res) => {
             $options: "i",
           },
         },
-        // {
-        //   region: {
-        //     $regex: region,
-        //     $options: "i",
-        //   },
-        // },
-        // {
-        //   type: {
-        //     $regex: type,
-        //     $options: "i",
-        //   },
-        // },
       ],
     });
   }
@@ -71,7 +57,7 @@ export const getLocations = async (req, res) => {
       .skip(skip)
       .limit(perPage)
       .sort({
-        [sortBy]: sortOrder === "desc" ? -1 : 1,
+        [sortBy]: sortOrder === "asc" ? -1 : 1,
       })
       .populate("ownerId", "name"),
     locationQuery.countDocuments(),
@@ -86,6 +72,38 @@ export const getLocations = async (req, res) => {
     perPage,
   });
   console.log(req.query);
+};
+
+export const updateLocationId = async (req, res) => {
+  const { id } = req.params;
+  const { _id: ownerId } = req.user;
+  const { file } = req;
+
+  const updateData = {
+    ...req.body,
+  };
+
+  if (file) {
+    const result = await uploadImageToCloudinary(file.buffer, id);
+
+    if (result?.secure_url) {
+      updateData.image = result.secure_url;
+    }
+  }
+
+  const updateLocation = await Location.findOneAndUpdate(
+    { _id: id, ownerId },
+    updateData,
+    {
+      returnDocument: "after",
+      runValidators: true,
+    },
+  );
+  if (!updateLocation) {
+    throw createHttpError(404, `Location with id=${id} not found`);
+  }
+
+  res.json(updateLocation);
 };
 
 export const createLocation = async (req, res) => {
