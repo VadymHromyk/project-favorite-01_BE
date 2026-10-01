@@ -24,7 +24,7 @@ const locationSchema = new Schema(
     },
     rate: {
       type: Number,
-      required: true,
+      default: 0,
     },
     description: {
       type: String,
