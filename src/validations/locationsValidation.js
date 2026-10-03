@@ -10,6 +10,7 @@ export const getLocationsSchema = {
   [Segments.QUERY]: Joi.object({
     page: Joi.number().integer().min(1).default(1),
     perPage: Joi.number().integer().min(1).max(1000).default(10),
+    limit: Joi.number().integer().min(1).max(1000),
     sortBy: Joi.string()
       .valid(...locationsSortFields)
       .default("_id"),
