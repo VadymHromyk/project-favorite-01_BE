@@ -1,5 +1,6 @@
 import createHttpError from "http-errors";
 import { Location } from "../models/location.js";
+import { Feedback } from "../models/feedbackModel.js";
 import { isValidObjectId } from "mongoose";
 import { User } from "../models/user.js";
 import {
@@ -11,6 +12,7 @@ export const getLocations = async (req, res) => {
   const {
     page = 1,
     perPage = 10,
+    limit,
     sortBy = "_id",
     sortOrder = "asc",
     region,
@@ -18,58 +20,95 @@ export const getLocations = async (req, res) => {
     rate,
     search,
   } = req.query;
-  const skip = (page - 1) * perPage;
-  const locationQuery = Location.find();
+  const pageSize = limit ?? perPage;
+  const skip = (page - 1) * pageSize;
+  const locationFilter = {};
 
   if (region) {
-    locationQuery.where("region").equals(region);
+    locationFilter.region = region;
   }
   if (locationType) {
-    locationQuery.where("locationType").equals(locationType);
+    locationFilter.locationType = locationType;
   }
 
   if (rate) {
-    locationQuery.where("rate").equals(rate);
+    locationFilter.rate = rate;
   }
 
   if (search) {
-    locationQuery.where({
-      $or: [
-        {
-          name: {
-            $regex: search,
-            $options: "i",
-          },
+    locationFilter.$or = [
+      {
+        name: {
+          $regex: search,
+          $options: "i",
         },
-        {
-          description: {
-            $regex: search,
-            $options: "i",
-          },
+      },
+      {
+        description: {
+          $regex: search,
+          $options: "i",
         },
-      ],
-    });
+      },
+    ];
   }
 
+  const locationQuery = Location.find(locationFilter);
+  const sort =
+    sortBy === "rating"
+      ? { rate: -1 }
+      : sortBy === "newest"
+        ? { createdAt: -1 }
+        : { [sortBy]: sortOrder === "asc" ? -1 : 1 };
+
   const [locations, totalItems] = await Promise.all([
-    locationQuery
-      .clone()
-      .skip(skip)
-      .limit(perPage)
-      .sort({
-        [sortBy]: sortOrder === "asc" ? -1 : 1,
-      })
-      .populate("ownerId", "name"),
+    sortBy === "popular"
+      ? Location.aggregate([
+          { $match: locationFilter },
+          {
+            $lookup: {
+              from: Feedback.collection.name,
+              let: { locationId: "$_id" },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: { $eq: ["$locationId", "$$locationId"] },
+                  },
+                },
+                { $count: "count" },
+              ],
+              as: "feedbackCount",
+            },
+          },
+          {
+            $addFields: {
+              popularity: {
+                $ifNull: [{ $arrayElemAt: ["$feedbackCount.count", 0] }, 0],
+              },
+            },
+          },
+          { $sort: { popularity: -1, createdAt: -1 } },
+          { $skip: skip },
+          { $limit: pageSize },
+          { $project: { feedbackCount: 0, popularity: 0 } },
+        ]).then((results) =>
+          Location.populate(results, { path: "ownerId", select: "name" }),
+        )
+      : locationQuery
+          .clone()
+          .skip(skip)
+          .limit(pageSize)
+          .sort(sort)
+          .populate("ownerId", "name"),
     locationQuery.countDocuments(),
   ]);
 
-  const totalPages = Math.ceil(totalItems / perPage);
+  const totalPages = Math.ceil(totalItems / pageSize);
   res.json({
     locations,
     totalItems,
     totalPages,
     page,
-    perPage,
+    perPage: pageSize,
   });
   console.log(req.query);
 };
