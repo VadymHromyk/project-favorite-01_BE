@@ -1,8 +1,10 @@
-import { User } from "../models/user.js";
 import { Location } from "../models/location.js";
 import { isValidObjectId } from "mongoose";
 import createHttpError from "http-errors";
-import { updateUserProfileService } from "../services/users.js";
+import {
+  getUserByIdService,
+  updateUserProfileService,
+} from "../services/users.js";
 
 export const getUserLocations = async (req, res) => {
   const { userId } = req.params;
@@ -13,7 +15,7 @@ export const getUserLocations = async (req, res) => {
   const skip = (page - 1) * limit;
 
   const filter = {
-    owner: userId,
+    ownerId: userId,
   };
 
   const [locations, totalItems] = await Promise.all([
@@ -65,10 +67,7 @@ export const getCurrentUser = async (req, res, next) => {
 export const getUserById = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const user = await User.findById(userId).select("name avatarUrl");
-    if (!user) {
-      throw createHttpError(404, "User not found");
-    }
+    const user = await getUserByIdService(userId);
     res.status(200).json({
       status: 200,
       message: "Public user profile retrieved successfully",
