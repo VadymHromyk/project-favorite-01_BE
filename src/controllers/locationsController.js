@@ -28,7 +28,9 @@ export const getLocations = async (req, res) => {
     locationFilter.region = region;
   }
   if (locationType) {
-    locationFilter.locationType = locationType;
+    locationFilter.locationType = Array.isArray(locationType)
+      ? { $in: locationType }
+      : locationType;
   }
 
   if (rate) {

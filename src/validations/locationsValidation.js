@@ -15,7 +15,10 @@ export const getLocationsSchema = {
       .valid(...locationsSortFields)
       .default("_id"),
     sortOrder: Joi.string().valid("asc", "desc").default("asc"),
-    locationType: Joi.string().valid(...locationTypeList),
+    locationType: Joi.alternatives().try(
+      Joi.string().valid(...locationTypeList),
+      Joi.array().items(Joi.string().valid(...locationTypeList)).min(1),
+    ),
     region: Joi.string().valid(...regionTypeList),
     rate: Joi.number().min(0).max(5),
     search: Joi.string().trim(),
