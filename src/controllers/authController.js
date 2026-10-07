@@ -11,18 +11,22 @@ import {
 
 export const registerUser = async (req, res) => {
   const { email, password, name } = req.body;
+  const normalizedEmail = email.trim().toLowerCase();
 
-  const existingUser = await User.findOne({ email });
+  const existingUser = await User.findOne({ email: normalizedEmail });
   if (existingUser) {
-    throw createHttpError(400, "Email in use");
+    throw createHttpError(
+      409,
+      "Користувач з такою поштою вже зареєстрований. Увійдіть або вкажіть іншу пошту",
+    );
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const newUser = await User.create({
-    email,
+    name,
+    email: normalizedEmail,
     password: hashedPassword,
-    username: name,
   });
 
   const newSession = await createSession(newUser._id);
