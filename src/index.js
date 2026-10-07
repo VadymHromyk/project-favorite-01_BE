@@ -19,7 +19,8 @@ const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
 const allowedOrigins = [
-  `http://localhost:${PORT}`,
+  "http://localhost:3030",
+  "http://localhost:3000",
   process.env.FRONTEND_URL, // адреса задеплоєного фронтенду
 ].filter(Boolean);
 
