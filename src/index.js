@@ -18,9 +18,20 @@ import categoriesRoutes from "./routes/categoriesRoutes.js";
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
+const allowedOrigins = [
+  `http://localhost:${PORT}`,
+  process.env.FRONTEND_URL, // адреса задеплоєного фронтенду
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  }),
+);
+
 app.use(logger);
 app.use(express.json());
-app.use(cors());
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
