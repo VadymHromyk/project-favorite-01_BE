@@ -10,21 +10,21 @@ const userSchema = new Schema(
         return this.email;
       },
     },
-    email: { 
-      type: String, 
-      unique: true, 
-      required: true, 
-      trim: true, 
-      lowercase: true 
+    email: {
+      type: String,
+      unique: true,
+      required: true,
+      trim: true,
+      lowercase: true,
     },
-    password: { 
-      type: String, 
-      required: true, 
-      minlength: 8 
+    password: {
+      type: String,
+      required: true,
+      minlength: 8,
     },
     avatarUrl: {
       type: String,
-      default: "https://academstore.s3.eu-north-1.amazonaws.com/default-avatar.png",
+      default: "",
     },
     articlesAmount: {
       type: Number,
