@@ -82,8 +82,9 @@ export const refreshUserSession = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
+  const normalizedEmail = email.trim().toLowerCase();
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email: normalizedEmail });
   if (!user) {
     throw createHttpError(401, "Email or password invalid");
   }
