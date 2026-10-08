@@ -56,58 +56,58 @@ export const getLocations = async (req, res) => {
     ];
   }
 
-  const locationQuery = Location.find(locationFilter);
-  const sort =
-    sortBy === "rating"
-      ? { rate: -1 }
-      : sortBy === "newest"
-        ? { createdAt: -1 }
-        : { [sortBy]: sortOrder === "asc" ? -1 : 1 };
+  let sortStage;
+  const order = sortOrder === "asc" ? 1 : -1;
+
+  if (sortBy === "popular") {
+    sortStage = { popularity: -1, createdAt: -1 };
+  } else if (sortBy === "rating" || sortBy === "rate") {
+    sortStage = { rate: order, createdAt: -1 };
+  } else if (sortBy === "newest") {
+    sortStage = { createdAt: -1 };
+  } else {
+    sortStage = { [sortBy]: order };
+  }
+
+  const pipeline = [
+    { $match: locationFilter },
+    {
+      $lookup: {
+        from: Feedback.collection.name,
+        let: { locationId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$locationId", "$$locationId"] },
+            },
+          },
+        ],
+        as: "feedbacksData",
+      },
+    },
+    {
+      $addFields: {
+        popularity: { $size: "$feedbacksData" },
+        rate: {
+          $cond: {
+            if: { $gt: [{ $size: "$feedbacksData" }, 0] },
+            then: { $avg: "$feedbacksData.rate" },
+            else: { $ifNull: ["$rate", 0] },
+          },
+        },
+      },
+    },
+    { $sort: sortStage },
+    { $skip: skip },
+    { $limit: pageSize },
+    { $project: { feedbacksData: 0, popularity: 0 } },
+  ];
 
   const [locations, totalItems] = await Promise.all([
-    sortBy === "popular"
-      ? Location.aggregate([
-          { $match: locationFilter },
-          {
-            $lookup: {
-              from: Feedback.collection.name,
-              let: { locationId: "$_id" },
-              pipeline: [
-                {
-                  $match: {
-                    $expr: { $eq: ["$locationId", "$$locationId"] },
-                  },
-                },
-              ],
-              as: "feedbacksData",
-            },
-          },
-          {
-            $addFields: {
-              popularity: { $size: "$feedbacksData" },
-              rate: {
-                $cond: {
-                  if: { $gt: [{ $size: "$feedbacksData" }, 0] },
-                  then: { $avg: "$feedbacksData.rate" },
-                  else: { $ifNull: ["$rate", 0] },
-                },
-              },
-            },
-          },
-          { $sort: { popularity: -1, createdAt: -1 } },
-          { $skip: skip },
-          { $limit: pageSize },
-          { $project: { feedbacksData: 0, popularity: 0 } },
-        ]).then((results) =>
-          Location.populate(results, { path: "ownerId", select: "name" }),
-        )
-      : locationQuery
-          .clone()
-          .skip(skip)
-          .limit(pageSize)
-          .sort(sort)
-          .populate("ownerId", "name"),
-    locationQuery.countDocuments(),
+    Location.aggregate(pipeline).then((results) =>
+      Location.populate(results, { path: "ownerId", select: "name" }),
+    ),
+    Location.countDocuments(locationFilter),
   ]);
 
   const totalPages = Math.ceil(totalItems / pageSize);
