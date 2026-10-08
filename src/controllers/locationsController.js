@@ -20,8 +20,10 @@ export const getLocations = async (req, res) => {
     rate,
     search,
   } = req.query;
-  const pageSize = limit ?? perPage;
-  const skip = (page - 1) * pageSize;
+
+  const numericPage = Number(page) || 1;
+  const pageSize = Number(limit ?? perPage) || 10;
+  const skip = (numericPage - 1) * pageSize;
   const locationFilter = {};
 
   if (region) {
@@ -34,7 +36,7 @@ export const getLocations = async (req, res) => {
   }
 
   if (rate) {
-    locationFilter.rate = rate;
+    locationFilter.rate = Number(rate);
   }
 
   if (search) {
@@ -76,22 +78,26 @@ export const getLocations = async (req, res) => {
                     $expr: { $eq: ["$locationId", "$$locationId"] },
                   },
                 },
-                { $count: "count" },
               ],
-              as: "feedbackCount",
+              as: "feedbacksData",
             },
           },
           {
             $addFields: {
-              popularity: {
-                $ifNull: [{ $arrayElemAt: ["$feedbackCount.count", 0] }, 0],
+              popularity: { $size: "$feedbacksData" },
+              rate: {
+                $cond: {
+                  if: { $gt: [{ $size: "$feedbacksData" }, 0] },
+                  then: { $avg: "$feedbacksData.rate" },
+                  else: { $ifNull: ["$rate", 0] },
+                },
               },
             },
           },
           { $sort: { popularity: -1, createdAt: -1 } },
           { $skip: skip },
           { $limit: pageSize },
-          { $project: { feedbackCount: 0, popularity: 0 } },
+          { $project: { feedbacksData: 0, popularity: 0 } },
         ]).then((results) =>
           Location.populate(results, { path: "ownerId", select: "name" }),
         )
@@ -105,14 +111,14 @@ export const getLocations = async (req, res) => {
   ]);
 
   const totalPages = Math.ceil(totalItems / pageSize);
+
   res.json({
     locations,
     totalItems,
     totalPages,
-    page,
+    page: numericPage,
     perPage: pageSize,
   });
-  console.log(req.query);
 };
 
 export const updateLocationId = async (req, res) => {
@@ -181,7 +187,6 @@ export const getLocationById = async (req, res) => {
     throw createHttpError(400, "Invalid location id");
   }
 
-  // ownerId has no ref in the schema yet, so the model must be passed explicitly
   const location = await Location.findById(id).populate({
     path: "ownerId",
     select: "name",
