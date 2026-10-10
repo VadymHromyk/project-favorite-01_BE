@@ -71,7 +71,12 @@ export const getUserById = async (req, res, next) => {
     res.status(200).json({
       status: 200,
       message: "Public user profile retrieved successfully",
-      data: user,
+      data: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        avatarUrl: user.avatarUrl,
+      },
     });
   } catch (error) {
     next(error);
