@@ -57,6 +57,7 @@ export const getCurrentUser = async (req, res, next) => {
         name: req.user.name,
         email: req.user.email,
         avatarUrl: req.user.avatarUrl,
+        articlesAmount: req.user.articlesAmount,
       },
     });
   } catch (error) {
