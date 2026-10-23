@@ -56,4 +56,6 @@ const locationSchema = new Schema(
   },
 );
 
+locationSchema.index({ ownerId: 1 });
+
 export const Location = model("Location", locationSchema);

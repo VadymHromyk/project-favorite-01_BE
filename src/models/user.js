@@ -26,15 +26,11 @@ const userSchema = new Schema(
       type: String,
       default: "",
     },
-    articlesAmount: {
-      type: Number,
-      default: 0,
-    },
   },
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 userSchema.methods.toJSON = function () {

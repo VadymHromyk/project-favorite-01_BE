@@ -1,15 +1,19 @@
 import createHttpError from "http-errors";
 import { User } from "../models/user.js";
+import { Location } from "../models/location.js";
 import { uploadImageToCloudinary } from "../utils/saveFileToCloudinary.js";
+import { isValidObjectId } from "mongoose";
 
 export const getUserByIdService = async (userId) => {
-  const user = await User.findById(userId)
-    .select("name email avatarUrl articlesAmount")
-    .lean();
+  if (!isValidObjectId(userId)) throw createHttpError(404, "User not found");
+
+  const user = await User.findById(userId).select("name avatarUrl").lean();
 
   if (!user) throw createHttpError(404, "User not found");
 
-  return user;
+  const articlesAmount = await Location.countDocuments({ ownerId: userId });
+
+  return { ...user, articlesAmount };
 };
 
 export const updateUserProfileService = async (
