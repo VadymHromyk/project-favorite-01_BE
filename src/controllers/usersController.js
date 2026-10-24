@@ -77,6 +77,7 @@ export const getUserById = async (req, res, next) => {
         name: user.name,
         email: user.email,
         avatarUrl: user.avatarUrl,
+        articlesAmount: user.articlesAmount,
       },
     });
   } catch (error) {

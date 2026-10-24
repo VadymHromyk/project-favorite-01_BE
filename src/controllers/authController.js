@@ -8,6 +8,7 @@ import {
   createSession,
   setSessionCookies,
 } from "../services/auth.js";
+import { withArticlesAmount } from "../services/users.js";
 
 export const registerUser = async (req, res) => {
   const { email, password, name } = req.body;
@@ -97,9 +98,11 @@ export const loginUser = async (req, res) => {
   const newSession = await createSession(user._id);
   setSessionCookies(res, newSession);
 
+  const userWithArticlesAmount = await withArticlesAmount(user);
+
   res.status(200).json({
     status: 200,
     message: "User logged in successfully",
-    data: user,
+    data: userWithArticlesAmount,
   });
 };
