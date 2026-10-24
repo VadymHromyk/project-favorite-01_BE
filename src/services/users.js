@@ -7,13 +7,20 @@ import { isValidObjectId } from "mongoose";
 export const getUserByIdService = async (userId) => {
   if (!isValidObjectId(userId)) throw createHttpError(404, "User not found");
 
-  const user = await User.findById(userId).select("name avatarUrl").lean();
+  const [user, articlesAmount] = await Promise.all([
+    User.findById(userId).select("name avatarUrl"),
+    Location.countDocuments({ ownerId: userId }),
+  ]);
 
   if (!user) throw createHttpError(404, "User not found");
 
-  const articlesAmount = await Location.countDocuments({ ownerId: userId });
+  return { ...user.toJSON(), articlesAmount };
+};
 
-  return { ...user, articlesAmount };
+export const withArticlesAmount = async (user) => {
+  const articlesAmount = await Location.countDocuments({ ownerId: user._id });
+
+  return { ...user.toJSON(), articlesAmount };
 };
 
 export const updateUserProfileService = async (

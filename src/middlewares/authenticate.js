@@ -2,6 +2,7 @@ import createHttpError from "http-errors";
 import { isValidObjectId } from "mongoose";
 import { Session } from "../models/session.js";
 import { User } from "../models/user.js";
+import { withArticlesAmount } from "../services/users.js";
 
 export const authenticate = async (req, res, next) => {
   const { sessionId, accessToken } = req.cookies;
@@ -35,7 +36,7 @@ export const authenticate = async (req, res, next) => {
     throw createHttpError(401);
   }
 
-  req.user = user;
+  req.user = await withArticlesAmount(user);
 
   next();
 };
